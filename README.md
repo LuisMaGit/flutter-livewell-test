@@ -30,7 +30,7 @@ The project implements a simple clean architecture, with:
 
 <img width="1000" height="400" src="https://user-images.githubusercontent.com/70621340/221600069-945a4148-c57a-4aa1-a391-073316cab705.png">
 
-* Notice that, for simplicity and scope of the project, only the <code>core</code> has been extracted in one package.
+* Notice that, for simplicity and scope of the project, only the <code>core</code> has been extracted in a package.
 
 ## Stack
   * dio: network operations
