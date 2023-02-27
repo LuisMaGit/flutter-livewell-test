@@ -1,0 +1,3 @@
+class StartupState {
+  const StartupState();
+}
