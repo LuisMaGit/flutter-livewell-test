@@ -11,6 +11,7 @@ enum LiveWeelIconType {
   arrowBack,
   download,
   noInternet,
+  emptySearch,
 }
 
 const _iconMap = {
@@ -22,6 +23,7 @@ const _iconMap = {
   LiveWeelIconType.arrowBack: Icons.arrow_back_ios_sharp,
   LiveWeelIconType.download: Icons.download_sharp,
   LiveWeelIconType.noInternet: Icons.signal_wifi_connected_no_internet_4_sharp,
+  LiveWeelIconType.emptySearch: Icons.search_off_sharp,
 };
 
 class LiveWellIcons extends HookConsumerWidget {

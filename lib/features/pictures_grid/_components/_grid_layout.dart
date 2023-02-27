@@ -40,7 +40,7 @@ class _GridLayout extends HookConsumerWidget {
     }
 
     Widget emtpy() {
-      return Center(child: GenericError(onTap: events.tryAgain));
+      return Center(child: EmptySearch(search: state.search));
     }
 
     Widget success() {
