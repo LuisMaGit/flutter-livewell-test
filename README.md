@@ -26,7 +26,7 @@ Give the user the ability to download the images too. And show appropriate messa
 The project implements a simple clean architecture, with:
 * a <code>core</code> isolated from the rest of the app (is a Dart package) with the bussiness logic, contracts, services abstractions and domain models, 
 * a <code>data</code> layer with the service implementations and
-* a presentation layer with the <code>features</code> and the component library <code>core_ui</code>.
+* a presentation layer with the <code>features</code> and the components library <code>core_ui</code>.
 
 <img width="1000" height="400" src="https://user-images.githubusercontent.com/70621340/221600069-945a4148-c57a-4aa1-a391-073316cab705.png">
 
