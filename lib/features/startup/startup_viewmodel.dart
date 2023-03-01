@@ -1,10 +1,18 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:core/core_export.dart';
 import 'package:livewell_test/features/startup/startup_state.dart';
-import 'package:livewell_test/locator.dart';
 
 class StartupViewModel extends StateNotifier<StartupState> {
-  StartupViewModel() : super(const StartupState()) {
+  StartupViewModel({
+    required ThemeService themeService,
+    required IConectivityService conectivityService,
+    required QuickSnackbarService quickSnackbarService,
+  })  : _themeService = themeService,
+        _conectivityService = conectivityService,
+        _quickSnackbarService = quickSnackbarService,
+        super(
+          const StartupState(),
+        ) {
     _conectivityService.isConnected().listen((hasInternet) {
       if (hasInternet &&
           _hideInternetOverlay != null &&
@@ -21,9 +29,9 @@ class StartupViewModel extends StateNotifier<StartupState> {
   }
 
   //di
-  final _themeService = locator<ThemeService>();
-  final _conectivityService = locator<IConectivityService>();
-  final _quickSnackbarService = locator<QuickSnackbarService>();
+  final ThemeService _themeService;
+  final IConectivityService _conectivityService;
+  final QuickSnackbarService _quickSnackbarService;
 
   var _isInternetOverlayOpen = false;
   void Function({required bool firstTime})? _showOverlayInternet;

@@ -3,11 +3,12 @@ import 'package:hooks_riverpod/hooks_riverpod.dart';
 
 import 'package:core/core_export.dart';
 import 'package:livewell_test/core_ui/core_ui_export.dart';
-import 'package:livewell_test/locator.dart';
 
 class ThemeNotifier extends StateNotifier<LiveWellTheme> {
-  ThemeNotifier()
-      : super(
+  ThemeNotifier({
+    required ThemeService themeService,
+  })  : _themeService = themeService,
+        super(
           LiveWellTheme(
             colors: LiveWellColorsByTheme.light(),
             theme: AppTheme.light,
@@ -22,7 +23,7 @@ class ThemeNotifier extends StateNotifier<LiveWellTheme> {
   }
 
   //di
-  final _themeService = locator<ThemeService>();
+  final ThemeService _themeService;
 
   LiveWellTextStyles _getTextByColors(
     LiveWellColorsByTheme color,

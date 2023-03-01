@@ -1,21 +1,29 @@
-import 'package:hooks_riverpod/hooks_riverpod.dart';
-
 import 'package:core/core_export.dart';
+import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:livewell_test/features/picture_details/picture_details_state.dart';
-import 'package:livewell_test/locator.dart';
 
 class PictureDetailsViewModel extends StateNotifier<PictureDetailsState> {
-  PictureDetailsViewModel({required this.picture})
-      : super(PictureDetailsState(picture: picture));
-
-  final Picture picture;
+  PictureDetailsViewModel({
+    required IPathProviderService pathProviderService,
+    required IImageDownloadService imageDownloadService,
+    required IPermissionService permissionsService,
+    required QuickSnackbarService quickSnackbarService,
+    required IImageSaveGalleryService imageSaveGallerySerice,
+    required this.picture,
+  })  : _pathProviderService = pathProviderService,
+        _imageDownloadService = imageDownloadService,
+        _permissionsService = permissionsService,
+        _quickSnackbarService = quickSnackbarService,
+        _imageSaveGallerySerice = imageSaveGallerySerice,
+        super(PictureDetailsState(picture: picture));
 
   //di
-  final _pathProviderService = locator<IPathProviderService>();
-  final _imageDownloadService = locator<IImageDownloadService>();
-  final _permissionsService = locator<IPermissionService>();
-  final _quickSnackbarService = locator<QuickSnackbarService>();
-  final _imageSaveGallerySerice = locator<IImageSaveGalleryService>();
+  final Picture picture;
+  final IPathProviderService _pathProviderService;
+  final IImageDownloadService _imageDownloadService;
+  final IPermissionService _permissionsService;
+  final QuickSnackbarService _quickSnackbarService;
+  final IImageSaveGalleryService _imageSaveGallerySerice;
 
   //events
   Future<void> download() async {

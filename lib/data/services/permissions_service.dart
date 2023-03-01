@@ -1,9 +1,11 @@
 import 'package:core/core_export.dart';
-import 'package:livewell_test/locator.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PermissionsService implements IPermissionService {
-  final _platformService = locator<IPlatformService>();
+  const PermissionsService({
+    required IPlatformService platformService,
+  }) : _platformService = platformService;
+  final IPlatformService _platformService;
 
   Future<bool> _isStoragePermissionGranted() async {
     final platform = _platformService.getPlatform();

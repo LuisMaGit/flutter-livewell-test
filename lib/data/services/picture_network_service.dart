@@ -1,10 +1,13 @@
 import 'package:dio/dio.dart';
 import 'package:core/core_export.dart';
 import 'package:livewell_test/data/network_dtos/pictures_paginated_dto.dart';
-import 'package:livewell_test/locator.dart';
 
 class PictureNetworkService implements IPictureNetworkService {
-  final _envService = locator<IEnvironmentService>();
+  PictureNetworkService({
+    required IEnvironmentService envService,
+  }) : _envService = envService;
+
+  final IEnvironmentService _envService;
   final _dio = Dio();
 
   @override
@@ -35,6 +38,5 @@ class PictureNetworkService implements IPictureNetworkService {
     } on Exception {
       return null;
     }
-
   }
 }

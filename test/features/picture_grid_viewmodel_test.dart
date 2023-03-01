@@ -2,19 +2,8 @@ import 'package:core/core_export.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:livewell_test/features/pictures_grid/picture_grid_state.dart';
 import 'package:livewell_test/features/pictures_grid/picture_grid_viewmodel.dart';
-import 'package:livewell_test/locator.dart';
 import 'package:mockito/mockito.dart';
 import '../mocks/core_mocks.dart';
-
-void _registerDependencies() {
-  getAndRegisterPaginationService();
-  getAndRegisterPictureNetworkService();
-}
-
-void _unRegisterDependencies() {
-  removeRegistrationIfExists<PaginationService>();
-  removeRegistrationIfExists<IPictureNetworkService>();
-}
 
 const _initialState = PictureGridState();
 const _search = 'dog';
@@ -27,10 +16,20 @@ final _initialStateWithPictures = _initialState.copyWith(
   search: _search,
 );
 
-void main() {
-  setUpAll(_registerDependencies);
-  tearDownAll(_unRegisterDependencies);
+PictureGridViewModel _getViewModel({
+  IPictureNetworkService? pictureNetworkService,
+  PaginationService? paginationService,
+  PictureGridState? initialState,
+}) {
+  return PictureGridViewModel(
+    initialState: initialState ?? _initialState,
+    paginationService: paginationService ?? getPaginationServiceMock(),
+    picturesNetworkService:
+        pictureNetworkService ?? getPictureNetworkServiceMock(),
+  );
+}
 
+void main() {
   group(
     '$PictureGridViewModel - ',
     () {
@@ -40,7 +39,7 @@ void main() {
           test(
             'Given a new viewmodel, the state must be initial',
             () {
-              final vm = PictureGridViewModel();
+              final vm = _getViewModel();
               expect(vm.getState, _initialState);
             },
           );
@@ -53,7 +52,7 @@ void main() {
             test(
               'Given an empty/null search, the state should not change',
               () {
-                final vm = PictureGridViewModel();
+                final vm = _getViewModel();
                 vm.setSearch('');
                 vm.setSearch(null);
                 expect(vm.getState, _initialState);
@@ -67,18 +66,21 @@ void main() {
                 //arrange
                 const nextPage = 343;
                 const pageSize = 252;
-                final paginationMock = getAndRegisterPaginationService(
+                final paginationMock = getPaginationServiceMock(
                   nextPageStub: nextPage,
                   pageSizeStub: pageSize,
                 );
                 final picturesNetwokMock =
-                    getAndRegisterPictureNetworkService();
+                    getPictureNetworkServiceMock();
                 const _loadingState = PictureGridState(
                   uiState: PictureGridUIState.loading,
                   search: _search,
                   pictures: [],
                 );
-                final vm = PictureGridViewModel();
+                final vm = _getViewModel(
+                  pictureNetworkService: picturesNetwokMock,
+                  paginationService: paginationMock,
+                );
                 //act
                 vm.setSearch(_search);
                 expect(vm.getState, _loadingState);
@@ -96,7 +98,7 @@ void main() {
             test(
               'Given an error from the api, the ui state must be error',
               () async {
-                final vm = PictureGridViewModel();
+                final vm = _getViewModel();
                 await vm.setSearch(_search);
                 expect(
                   vm.getState,
@@ -110,10 +112,13 @@ void main() {
             test(
               'Given an empty response from the api, the ui state must be empty',
               () async {
-                getAndRegisterPictureNetworkService(
+                final mockIPictureNetworkService =
+                    getPictureNetworkServiceMock(
                   picturesRespStub: PicturesPaginated(pictures: []),
                 );
-                final vm = PictureGridViewModel();
+                final vm = _getViewModel(
+                  pictureNetworkService: mockIPictureNetworkService,
+                );
                 await vm.setSearch(_search);
                 expect(
                   vm.getState,
@@ -139,15 +144,18 @@ void main() {
                   uiState: PictureGridUIState.success,
                   pictures: _initialPictures,
                 );
-                getAndRegisterPictureNetworkService(
+                final mockPictureNetwork = getPictureNetworkServiceMock(
                   picturesRespStub: PicturesPaginated(
                     pictures: _initialPictures,
                   ),
                 );
-                final mockPagination = getAndRegisterPaginationService(
+                final mockPagination = getPaginationServiceMock(
                   missinDataStub: _missingData,
                 );
-                final vm = PictureGridViewModel();
+                final vm = _getViewModel(
+                  pictureNetworkService: mockPictureNetwork,
+                  paginationService: mockPagination,
+                );
                 //act
                 await vm.setSearch(_search);
                 //assert
@@ -182,17 +190,19 @@ void main() {
                   pictures: _fullData,
                 );
                 final _indexTrigger = 231331;
-                getAndRegisterPictureNetworkService(
+                final mockPictureNetwork = getPictureNetworkServiceMock(
                   picturesRespStub: PicturesPaginated(
                     pictures: _picturesToAppend,
                   ),
                 );
-                final mockPagination = getAndRegisterPaginationService(
+                final mockPagination = getPaginationServiceMock(
                   missinDataStub: _missingData,
                   shouldRequestOtherPageStub: true,
                 );
-                final vm = PictureGridViewModel(
+                final vm = _getViewModel(
                   initialState: _initialStateWithPictures,
+                  paginationService: mockPagination,
+                  pictureNetworkService: mockPictureNetwork,
                 );
                 //act
                 await vm.handlePagination(_indexTrigger);
@@ -211,12 +221,13 @@ void main() {
             test(
               'Given the pagination trigger is OFF, should mantain the state',
               () {
-                final mockPagination = getAndRegisterPaginationService(
+                final mockPagination = getPaginationServiceMock(
                   shouldRequestOtherPageStub: false,
                 );
                 final _indexTrigger = 231331;
-                final vm = PictureGridViewModel(
+                final vm = _getViewModel(
                   initialState: _initialStateWithPictures,
+                  paginationService: mockPagination,
                 );
                 vm.handlePagination(_indexTrigger);
                 verify(
@@ -237,7 +248,7 @@ void main() {
                   final _indexPicture = 3;
                   final selectedPicture =
                       _initialStateWithPictures.pictures[_indexPicture];
-                  final vm = PictureGridViewModel(
+                  final vm = _getViewModel(
                     initialState: _initialStateWithPictures,
                   );
                   vm.goToPictureDetails(_indexPicture);

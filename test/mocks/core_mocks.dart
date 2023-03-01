@@ -1,6 +1,5 @@
 import 'package:core/core.dart';
 import 'package:flutter_test/flutter_test.dart';
-import 'package:livewell_test/locator.dart';
 import 'package:mockito/annotations.dart';
 import 'package:mockito/mockito.dart';
 
@@ -10,13 +9,12 @@ import 'core_mocks.mocks.dart';
   MockSpec<PaginationService>(onMissingStub: OnMissingStub.returnDefault),
   MockSpec<IPictureNetworkService>(onMissingStub: OnMissingStub.returnDefault),
 ])
-PaginationService getAndRegisterPaginationService({
+PaginationService getPaginationServiceMock({
   int? nextPageStub,
   int? pageSizeStub,
   bool? shouldRequestOtherPageStub,
   bool? missinDataStub,
 }) {
-  removeRegistrationIfExists<PaginationService>();
   final mock = MockPaginationService();
   if (nextPageStub != null) {
     when(mock.nextPage).thenReturn(nextPageStub);
@@ -31,14 +29,12 @@ PaginationService getAndRegisterPaginationService({
   if (missinDataStub != null) {
     when(mock.missingData).thenReturn(missinDataStub);
   }
-  locator.registerSingleton<PaginationService>(mock);
   return mock;
 }
 
-IPictureNetworkService getAndRegisterPictureNetworkService({
+IPictureNetworkService getPictureNetworkServiceMock({
   PicturesPaginated? picturesRespStub,
 }) {
-  removeRegistrationIfExists<IPictureNetworkService>();
   final mock = MockIPictureNetworkService();
   if (picturesRespStub != null) {
     when(mock.getPictures(
@@ -47,6 +43,5 @@ IPictureNetworkService getAndRegisterPictureNetworkService({
       perPage: argThat(isNotNull, named: 'perPage'),
     )).thenAnswer((_) async => picturesRespStub);
   }
-  locator.registerSingleton<IPictureNetworkService>(mock);
   return mock;
 }

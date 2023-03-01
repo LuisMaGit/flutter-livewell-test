@@ -10,46 +10,69 @@ import 'package:livewell_test/features/pictures_grid/picture_grid_viewmodel.dart
 import 'package:livewell_test/features/startup/startup_state.dart';
 import 'package:livewell_test/features/startup/startup_viewmodel.dart';
 
-final locator = GetIt.instance;
+final _locator = GetIt.instance;
+
 Future<void> configureDependencies() async {
-  locator
+  _locator
     ..registerFactory(() => PaginationService())
     ..registerLazySingleton(() => ThemeService())
     ..registerFactory<IEnvironmentService>(() => EnvironmentService())
     ..registerFactory<IPathProviderService>(() => PathProviderService())
     ..registerFactory<IImageDownloadService>(() => ImageDownloadService())
-    ..registerFactory<IPictureNetworkService>(() => PictureNetworkService())
+    ..registerFactory<IPictureNetworkService>(
+      () => PictureNetworkService(
+        envService: _getDependency<IEnvironmentService>(),
+      ),
+    )
     ..registerFactory<IImageSaveGalleryService>(() => ImageSaveGalleryService())
     ..registerLazySingleton<IConectivityService>(() => ConectivityService())
     ..registerLazySingleton(() => QuickSnackbarService())
-    ..registerLazySingleton<IPermissionService>(() => PermissionsService())
-    ..registerLazySingleton<IPlatformService>(() => PlatformService());
+    ..registerLazySingleton<IPlatformService>(() => PlatformService())
+    ..registerLazySingleton<IPermissionService>(
+      () => PermissionsService(
+        platformService: _getDependency<IPlatformService>(),
+      ),
+    );
 }
 
-void removeRegistrationIfExists<T extends Object>(){
-    if (locator.isRegistered<T>()) {
-    locator.unregister<T>();
-  }
+T _getDependency<T extends Object>() {
+  return _locator<T>();
 }
 
 final pictureGridViewModelProvider =
     StateNotifierProvider<PictureGridViewModel, PictureGridState>(
-  (_) => PictureGridViewModel(),
+  (_) => PictureGridViewModel(
+    paginationService: _getDependency<PaginationService>(),
+    picturesNetworkService: _getDependency<IPictureNetworkService>(),
+  ),
 );
 
-final pictureDetailsViewModelProvider =
-    StateNotifierProvider.autoDispose<PictureDetailsViewModel, PictureDetailsState>(
+final pictureDetailsViewModelProvider = StateNotifierProvider.autoDispose<
+    PictureDetailsViewModel, PictureDetailsState>(
   (ref) {
     final picture = ref.read(pictureGridViewModelProvider).selectedPicture;
-    return PictureDetailsViewModel(picture: picture);
+    return PictureDetailsViewModel(
+      pathProviderService: _getDependency<IPathProviderService>(),
+      imageDownloadService: _getDependency<IImageDownloadService>(),
+      permissionsService: _getDependency<IPermissionService>(),
+      quickSnackbarService: _getDependency<QuickSnackbarService>(),
+      imageSaveGallerySerice: _getDependency<IImageSaveGalleryService>(),
+      picture: picture,
+    );
   },
 );
 
 final startupViewModelProvider =
     StateNotifierProvider<StartupViewModel, StartupState>(
-  (_) => StartupViewModel(),
+  (_) => StartupViewModel(
+    themeService: _getDependency<ThemeService>(),
+    conectivityService: _getDependency<IConectivityService>(),
+    quickSnackbarService: _getDependency<QuickSnackbarService>(),
+  ),
 );
 
 final themeProvider = StateNotifierProvider<ThemeNotifier, LiveWellTheme>(
-  (_) => ThemeNotifier(),
+  (_) => ThemeNotifier(
+    themeService: _getDependency<ThemeService>(),
+  ),
 );

@@ -1,15 +1,19 @@
 import 'package:hooks_riverpod/hooks_riverpod.dart';
 import 'package:core/core_export.dart';
 import 'package:livewell_test/features/pictures_grid/picture_grid_state.dart';
-import 'package:livewell_test/locator.dart';
 
 class PictureGridViewModel extends StateNotifier<PictureGridState> {
-  PictureGridViewModel({this.initialState = const PictureGridState()})
-      : super(initialState);
+  PictureGridViewModel({
+    required IPictureNetworkService picturesNetworkService,
+    required PaginationService paginationService,
+    this.initialState = const PictureGridState(),
+  })  : _picturesNetworkService = picturesNetworkService,
+        _paginationService = paginationService,
+        super(initialState);
 
   //di
-  final _picturesNetworkService = locator<IPictureNetworkService>();
-  final _paginationService = locator<PaginationService>();
+  final IPictureNetworkService _picturesNetworkService;
+  final PaginationService _paginationService;
 
   final PictureGridState initialState;
   PictureGridState get getState => state;
