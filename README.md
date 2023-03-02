@@ -38,7 +38,7 @@ The project implements a simple clean architecture, with:
   * flutter_hooks: syntactic sugar / requirement
   * gallery_saver: store picture in device gallery
   * get_it: dependency injection
-  * hooks_riverpod: tate management
+  * hooks_riverpod: state management
   * path_provider: temporary downloaded picture path
   * permission_handler: access device storage
   * visibility_detector: ui need
